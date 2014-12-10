@@ -1,0 +1,14 @@
+Package: nmisc
+Type: Package
+Title: Miscellaneous functions useful to Nick.
+Version: 0.1.0
+Date: 2014-12-10
+Author: Nick Allen <nick@nickallen.org>
+Maintainer: Nick Allen <nick@nickallen.org>
+Description: Miscellaneous functions useful to Nick.
+License: MIT + file LICENSE
+Depends:
+    digest,
+    stashR
+Suggests:
+    testthat
