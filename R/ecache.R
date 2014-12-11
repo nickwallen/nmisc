@@ -72,7 +72,7 @@ ecache <- function (expr,
         if (verbose) message (sprintf ("saving to cache: %s @ %s", key, Sys.time()))
 
         # evaluate the expression and cache the result
-        result <- eval (expr)
+        result <- eval (parse (text=expr))
         stashR::dbInsert (stash, key = key, value = serialize (expr, NULL))
     }
     
