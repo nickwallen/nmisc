@@ -1,24 +1,37 @@
 
 #'
+#' Expression Cache
+#'
 #' Caches the result of long-running expressions to avoid unnecessary 
-#' re-execution.  The result of the expression is either cached and returned
-#' or returned directly from cache.  If the source code within the expression
-#' changes, then the result will be automatically re-calculated.
+#' re-execution.  The function will return the cached result of the 
+#' expression if one exists.  Otherwise the function will execute the 
+#' expression, cache the result and then return it.  
+#' 
+#' A checksum of an expression's source code, excluding white space,
+#' is used to generate a unique identitifier to identify the cached expression.
+#' The cache will be invalidated if the source code within the expression 
+#' itself changes.
 #'
 #' @export
 #'
-#' @param expr The expression whose result is cached.
+#' @param expr The expression to cache.
 #' @param verbose Is more verbose output needed?
-#' @param clear_cache Should all of the cached objects be deleted?
-#' @param cache_dir The directory containing the cached values.
-#' @param cache_db The name of the stash/database used to cache the values.
-#' @return The result of the expression either from cache or freshly computed.
+#' @param clear_cache Should all cached objects be deleted?
+#' @param cache_dir The directory containing the cache.  This should either be an 
+#' absolute path or relative to the current working directory.
+#' @return The expression's result either retrieved from cache or freshly calculated.
 #' 
 #' @examples
-#' cache ({ 2 + 3 + 4 })
+#' ecache ({ 2 + 3 + 4 })
+#' ecache ({ Sys.sleep (2); 2 + 3 + 4})
 #'
-cache <- function (expr, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Rcache", cache_db = ".nmisc.cache" ) {
+ecache <- function (expr, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Recache") {
     
+    #stopifnot (is.expression (expr))
+    stopifnot (is.logical (verbose))
+    stopifnot (is.logical (clear_cache))
+    stopifnot (is.character (cache_dir))
+
     # extract the source code of the expression
     code <- substitute (expr)
     
@@ -34,7 +47,7 @@ cache <- function (expr, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Rca
     }
     
     # connect to a local stash containing the cached objects
-    stash <- new ("localDB", dir = cache_dir, name = cache_db)
+    stash <- new ("localDB", dir = cache_dir, name = cache_dir)
 
     # has the expression already been cached?
     if (stashR::dbExists (stash, uuid)) {

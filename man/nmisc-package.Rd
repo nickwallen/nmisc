@@ -27,5 +27,5 @@ Nick Allen <nick@nickallen.org>
 \seealso{
 }
 \examples{
-cache ({1 + 2 + 3})
+ecache ({1 + 2 + 3})
 }
