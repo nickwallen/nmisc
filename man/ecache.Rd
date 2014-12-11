@@ -3,8 +3,9 @@
 \alias{ecache}
 \title{Expression Cache}
 \usage{
-ecache(expr, key = NULL, verbose = FALSE, clear_cache = FALSE,
-  cache_dir = ".Recache")
+ecache(expr, key = NULL, clear_cache = getOption("clear_cache", default =
+  FALSE), cache_dir = getOption("cache_dir", default = ".Recache"),
+  verbose = getOption("verbose", default = FALSE))
 }
 \arguments{
 \item{expr}{The expression to cache.}
@@ -12,12 +13,12 @@ ecache(expr, key = NULL, verbose = FALSE, clear_cache = FALSE,
 \item{key}{[Optional] The key to cache the expression under.  In most cases, this
 argument is not necessary.}
 
-\item{verbose}{Is more verbose output needed?}
-
 \item{clear_cache}{Should all cached objects be deleted?}
 
 \item{cache_dir}{The directory containing the cache.  This should either be an
 absolute path or relative to the current working directory.}
+
+\item{verbose}{Is more verbose output needed?}
 }
 \value{
 The expression's result either retrieved from cache or freshly calculated.

@@ -17,21 +17,26 @@
 #' @param expr The expression to cache.
 #' @param key [Optional] The key to cache the expression under.  In most cases, this
 #' argument is not necessary.
-#' @param verbose Is more verbose output needed?
 #' @param clear_cache Should all cached objects be deleted?
 #' @param cache_dir The directory containing the cache.  This should either be an 
 #' absolute path or relative to the current working directory.
+#' @param verbose Is more verbose output needed?
 #' @return The expression's result either retrieved from cache or freshly calculated.
 #' 
 #' @examples
 #' x <- ecache ({ 2 + 3 + 4 })
 #' y <- ecache ({ Sys.sleep (2); 2 + 3 + 4})
 #'
-ecache <- function (expr, key = NULL, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Recache") {
+ecache <- function (expr, 
+                    key = NULL, 
+                    clear_cache = getOption ("clear_cache", default = FALSE), 
+                    cache_dir = getOption ("cache_dir", default = ".Recache"),
+                    verbose = getOption ("verbose", default = FALSE)) {
     
-    stopifnot (is.logical (verbose))
+    stopifnot (is.character (key) | is.null (key))
     stopifnot (is.logical (clear_cache))
     stopifnot (is.character (cache_dir))
+    stopifnot (is.logical (verbose))
 
     # does a unique key need to be calculated for the expression?
     if (is.null (key)) {
