@@ -3,10 +3,14 @@
 \alias{ecache}
 \title{Expression Cache}
 \usage{
-ecache(expr, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Recache")
+ecache(expr, key = NULL, verbose = FALSE, clear_cache = FALSE,
+  cache_dir = ".Recache")
 }
 \arguments{
 \item{expr}{The expression to cache.}
+
+\item{key}{[Optional] The key to cache the expression under.  In most cases, this
+argument is not necessary.}
 
 \item{verbose}{Is more verbose output needed?}
 
@@ -31,7 +35,7 @@ The cache will be invalidated if the source code within the expression
 itself changes.
 }
 \examples{
-ecache ({ 2 + 3 + 4 })
-ecache ({ Sys.sleep (2); 2 + 3 + 4})
+x <- ecache ({ 2 + 3 + 4 })
+y <- ecache ({ Sys.sleep (2); 2 + 3 + 4})
 }
 

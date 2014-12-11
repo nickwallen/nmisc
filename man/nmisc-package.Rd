@@ -27,5 +27,5 @@ Nick Allen <nick@nickallen.org>
 \seealso{
 }
 \examples{
-ecache ({1 + 2 + 3})
+x <- ecache ({1 + 2 + 3})
 }

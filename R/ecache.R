@@ -15,6 +15,8 @@
 #' @export
 #'
 #' @param expr The expression to cache.
+#' @param key [Optional] The key to cache the expression under.  In most cases, this
+#' argument is not necessary.
 #' @param verbose Is more verbose output needed?
 #' @param clear_cache Should all cached objects be deleted?
 #' @param cache_dir The directory containing the cache.  This should either be an 
@@ -22,24 +24,27 @@
 #' @return The expression's result either retrieved from cache or freshly calculated.
 #' 
 #' @examples
-#' ecache ({ 2 + 3 + 4 })
-#' ecache ({ Sys.sleep (2); 2 + 3 + 4})
+#' x <- ecache ({ 2 + 3 + 4 })
+#' y <- ecache ({ Sys.sleep (2); 2 + 3 + 4})
 #'
-ecache <- function (expr, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Recache") {
+ecache <- function (expr, key = NULL, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Recache") {
     
-    #stopifnot (is.expression (expr))
     stopifnot (is.logical (verbose))
     stopifnot (is.logical (clear_cache))
     stopifnot (is.character (cache_dir))
 
-    # extract the source code of the expression
-    code <- substitute (expr)
-    
-    # strip all whitespace, so whitespace changes do not impact cached values
-    code <- gsub ("[[:blank:]]+", "", code)
-    
-    # generate a uuid based on the expression's source code
-    uuid <- digest::digest (code)
+    # does a unique key need to be calculated for the expression?
+    if (is.null (key)) {
+
+        # extract the source code of the expression
+        code <- substitute (expr)
+        
+        # strip all whitespace, so whitespace changes do not impact cached values
+        code <- gsub ("[[:blank:]]+", "", code)
+        
+        # generate a uuid based on the expression's source code
+        key <- digest::digest (code)
+    }
 
     # clear the cache, if asked to
     if (clear_cache) {
@@ -50,20 +55,20 @@ ecache <- function (expr, verbose = FALSE, clear_cache = FALSE, cache_dir = ".Re
     stash <- new ("localDB", dir = cache_dir, name = cache_dir)
 
     # has the expression already been cached?
-    if (stashR::dbExists (stash, uuid)) {
+    if (stashR::dbExists (stash, key)) {
         
-        if (verbose) message (sprintf ("loading from cache: %s @ %s", uuid, Sys.time()))
+        if (verbose) message (sprintf ("loading from cache: %s @ %s", key, Sys.time()))
         
         # fetch the result from cache
-        result <- unserialize (stashR::dbFetch (stash, uuid))
+        result <- unserialize (stashR::dbFetch (stash, key))
     
     } else {
         
-        if (verbose) message (sprintf ("saving to cache: %s @ %s", uuid, Sys.time()))
+        if (verbose) message (sprintf ("saving to cache: %s @ %s", key, Sys.time()))
 
         # evaluate the expression and cache the result
         result <- eval (expr)
-        stashR::dbInsert (stash, key = uuid, value = serialize (expr, NULL))
+        stashR::dbInsert (stash, key = key, value = serialize (expr, NULL))
     }
     
     return (result)
